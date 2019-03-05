@@ -12,8 +12,6 @@ class QRCode extends StatefulWidget{
 }
 
 
-
-
 class _QRCode extends State<QRCode>{
 
 
