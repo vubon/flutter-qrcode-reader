@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:barcode_scan/barcode_scan.dart';
-import 'package:gps_coordinates/gps_coordinates.dart';
+import 'package:location/location.dart';
 import 'package:device_info/device_info.dart';
 
 
@@ -60,7 +60,8 @@ class _MyHomePageState extends State<MyHomePage> {
   String responseData = "";
 
   // for geolocation
-  Map<String, double> _coordinates = new Map();
+  LocationData _startLocation;
+  Location _location = new Location();
 
   // for device information
   static final DeviceInfoPlugin deviceInfoPlugin = new DeviceInfoPlugin();
@@ -180,8 +181,8 @@ class _MyHomePageState extends State<MyHomePage> {
   void postData() async {
     Map data = {
       "qrcode": qrCode,
-      "lat": _coordinates["lat"],
-      "long": _coordinates["long"],
+      "lat": _startLocation.latitude,
+      "long": _startLocation.longitude,
       "deviceInfo": _deviceData,
     };
     //print(data);
@@ -227,10 +228,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   _getCoordinates() async {
-    Map<String, double> coordinates;
+    LocationData coordinates;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      coordinates = await GpsCoordinates.gpsCoordinates;
+      coordinates = await _location.getLocation();
     } on PlatformException catch (e) {
       if (e.code == "LOCATION DISABLED") {
         showDialog(
@@ -242,10 +243,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         );
       }
-      Map<String, double> placeholderCoordinates = new Map();
-      placeholderCoordinates["lat"] = 0.0;
-      placeholderCoordinates["long"] = 0.0;
-      coordinates = placeholderCoordinates;
+      coordinates = null;
     }
 
     // If the widget was removed from the tree while the asynchronous platform
@@ -254,7 +252,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (!mounted) return;
 
     setState(() {
-      _coordinates = coordinates;
+      _startLocation = coordinates;
     });
   }
 
