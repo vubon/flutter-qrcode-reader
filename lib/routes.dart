@@ -12,7 +12,7 @@ class Routes{
       theme: new ThemeData(
         primaryColor: const Color(0xff271f56),
       ),
-      home: new MyHomePage(title: 'Demo Bank Ltd.',),
+      home: new MyApp(title: 'Demo Bank Ltd.',),
 
 
     ));
